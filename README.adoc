@@ -1,3 +1,13 @@
+== Setup Notes
+
+To run zookeeper locally:
+  Mac: https://blog.kompany.org/2013/02/23/setting-up-apache-zookeeper-on-os-x-in-five-minutes-or-less/
+  Windows: https://support.lucidworks.com/hc/en-us/articles/203187153-Install-and-start-Zookeeper-server-on-Windows
+----
+To run RabbitMQ locally:
+  Mac: brew install rabbitmq; brew services start rabbitmq
+  Windows: https://www.rabbitmq.com/install-windows.html
+
 == Spring Cloud Data Flow Primer
 
 This is a presentation meant to educate users on on the basics of Spring Cloud Dataflow.
