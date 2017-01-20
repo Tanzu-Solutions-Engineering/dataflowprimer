@@ -25,6 +25,7 @@ public class SourcedemoApplication {
 	@Bean
 	@InboundChannelAdapter(value = Source.OUTPUT, poller = @Poller(fixedDelay = "${fixedDelay}", maxMessagesPerPoll = "1"))
 	public MessageSource<String> timerMessageSource() {
+
 		return () -> new GenericMessage<>("Hello World");
 	}
 
