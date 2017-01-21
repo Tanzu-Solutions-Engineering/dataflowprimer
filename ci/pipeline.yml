@@ -20,7 +20,9 @@ resources:
  - name: m2
    type: docker-image
    source:
-    repository: springcloud/spring-pipeline-m2
+    repository: mwrightpivotal/spring-pipeline-m2
+    username: {{dockerhub-user}}
+    password: {{dockerhub-pswd}}
 jobs:
   - name: generate-version
     public: true
