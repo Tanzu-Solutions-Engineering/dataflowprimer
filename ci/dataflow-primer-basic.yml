@@ -1,0 +1,126 @@
+resources:
+- name: df-repo
+  type: git
+  source:
+    uri: git@github.com:Pivotal-Field-Engineering/dataflowprimer
+    branch: master
+    private_key: {{df-private-key}}
+    username: mwright-pivotal
+    password: newuser1
+
+- name: version
+  type: semver
+  source:
+    endpoint: {{s3-endpoint}}
+    bucket: df-pipeline-artifacts
+    key: current-version
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+    initial_version: 1.0.0
+
+- name: df-release
+  type: s3
+  source:
+    bucket: df-pipeline-artifacts
+    regexp: sourcedemo-(.*).jar
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+    endpoint: {{s3-endpoint}}
+
+jobs:
+- name: unit
+  plan:
+  - get: df-repo
+    trigger: true
+  - task: unit
+    file: df-repo/ci/tasks/unit.yml
+    config:
+      params:
+        SUBPROJECT: sourcedemo
+
+- name: build-binary
+  serial: true
+  plan:
+  - get: df-repo
+    passed: [unit]
+    trigger: true
+  - get: version
+    params: {bump: patch}
+  - task: build-artifact
+    file: df-repo/ci/tasks/build-artifact.yml
+    config:
+      params:
+        SUBPROJECT: sourcedemo
+    timeout: 5m
+  - put: df-release
+    params: {file: build-output/sourcedemo-*.jar}
+  - put: df-repo
+    params:
+      repository: df-repo
+      tag: version/number
+  - put: version
+    params: {file: version/number}
+
+- name: acceptance-tests
+  plan:
+  - aggregate:
+    - get: df-release
+      passed: [build-binary]
+      trigger: true
+    - get: df-repo
+      passed: [build-binary]
+      trigger: true
+  - task: deploy-to-cats
+    file: df-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.cf.wrightcode.net
+        USERNAME: mwright@pivotal.io
+        PASSWORD: p1v0tal
+        ORG: wright-org
+        SPACE: CI
+        HOST: df-cats
+  - task: cats
+    file: df-repo/ci/tasks/cats.yml
+    config:
+      params:
+        MUSIC_URL: http://dataflow-server.cf.wrightcode.net
+
+- name: promote-to-uat
+  plan:
+  - aggregate:
+    - get: df-release
+      passed: [acceptance-tests]
+      trigger: true
+    - get: df-repo
+      passed: [acceptance-tests]
+      trigger: true
+  - task: deploy-to-uat
+    file: df-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.cf.wrightcode.net
+        USERNAME: mwright@pivotal.io
+        PASSWORD: p1v0tal
+        ORG: wright-org
+        SPACE: uat
+        HOST: df-uat
+
+- name: manual-deploy-to-prod
+  serial: true
+  plan:
+  - aggregate:
+    - get: df-release
+      passed: [promote-to-uat]
+    - get: df-repo
+      passed: [promote-to-uat]
+  - task: deploy-to-prod
+    file: df-repo/ci/tasks/cf-deployment.yml
+    config:
+      params:
+        API_ENDPOINT: api.cf.wrightcode.et
+        USERNAME: mwright@pivotal.io
+        PASSWORD: p1v0tal
+        ORG: wright-org
+        SPACE: prod
+        HOST: df-server
