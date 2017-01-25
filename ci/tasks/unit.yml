@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: datianshi/gradle}
+
+inputs:
+  - name: df-repo
+
+run:
+  path: df-repo/ci/tasks/unit.sh
+  
+params:
+  SUBPROJECT:

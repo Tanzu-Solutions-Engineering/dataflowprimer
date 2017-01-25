@@ -1,0 +1,21 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: datianshi/cf-cli}
+
+inputs:
+  - name: df-repo
+  - name: df-release
+
+run:
+  path: df-repo/ci/tasks/cf-deployment.sh
+
+params:
+  API_ENDPOINT:
+  USERNAME:
+  PASSWORD:
+  ORG:
+  SPACE:
+  HOST:
