@@ -38,7 +38,7 @@ jobs:
       params:
         SUBPROJECT: sourcedemo
 
-- name: build-binary
+- name: build-binary-sourceapp
   serial: true
   plan:
   - get: df-repo
@@ -61,14 +61,37 @@ jobs:
   - put: version
     params: {file: version/number}
 
+- name: build-binary-sinkapp
+  serial: true
+  plan:
+  - get: df-repo
+    passed: [unit]
+    trigger: true
+  - get: version
+    params: {bump: patch}
+  - task: build-artifact
+    file: df-repo/ci/tasks/build-artifact.yml
+    config:
+      params:
+        SUBPROJECT: sinkdemo
+    timeout: 5m
+  - put: df-release
+    params: {file: build-output/sinkdemo-*.jar}
+  - put: df-repo
+    params:
+      repository: df-repo
+      tag: version/number
+  - put: version
+    params: {file: version/number}
+
 - name: acceptance-tests
   plan:
   - aggregate:
     - get: df-release
-      passed: [build-binary]
+      passed: [build-binary-sourceapp, build-binary-sinkapp]
       trigger: true
     - get: df-repo
-      passed: [build-binary]
+      passed: [build-binary-sourceapp, build-binary-sinkapp]
       trigger: true
   - task: deploy-to-cats
     file: df-repo/ci/tasks/cf-deployment.yml
