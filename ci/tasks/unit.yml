@@ -3,7 +3,7 @@ platform: linux
 
 image_resource:
   type: docker-image
-  source: {repository: datianshi/gradle}
+  source: {repository: springcloud/pipeline-base}
 
 inputs:
   - name: df-repo
