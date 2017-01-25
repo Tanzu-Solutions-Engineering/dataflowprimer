@@ -8,4 +8,4 @@ echo $version
 ./mvnw clean package
 pwd
 ls target/.
-cp target/sourcedemo-*.jar ../../build-output/.
+cp target/${ARTIFACT} ../../build-output/.

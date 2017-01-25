@@ -48,9 +48,9 @@ jobs:
     params: {bump: patch}
   - task: build-artifact
     file: df-repo/ci/tasks/build-artifact.yml
-    config:
-      params:
-        SUBPROJECT: sourcedemo
+    params:
+      SUBPROJECT: sourcedemo
+      ARTIFACT: sourcedemo-*.jar
     timeout: 5m
   - put: df-release
     params: {file: build-output/sourcedemo-*.jar}
@@ -71,9 +71,9 @@ jobs:
     params: {bump: patch}
   - task: build-artifact
     file: df-repo/ci/tasks/build-artifact.yml
-    config:
-      params:
-        SUBPROJECT: sinkdemo
+    params:
+      SUBPROJECT: sinkdemo
+      ARTIFACT: sinkdemo-*.jar
     timeout: 5m
   - put: df-release
     params: {file: build-output/sinkdemo-*.jar}
