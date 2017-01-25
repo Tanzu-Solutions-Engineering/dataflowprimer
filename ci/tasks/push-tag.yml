@@ -8,12 +8,6 @@ image_resource:
 inputs:
   - name: df-repo
   - name: version
-  
-outputs:
-  - name: build-output
 
 run:
-  path: df-repo/ci/tasks/build-artifact.sh
-  
-params:
-  SUBPROJECT:
+  path: df-repo/ci/tasks/push-tag.sh
