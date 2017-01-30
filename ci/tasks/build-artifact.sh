@@ -5,7 +5,7 @@ export GRADLE_OPTS=-Dorg.gradle.native=false
 version=`cat version/number`
 cd df-repo/${SUBPROJECT}
 echo $version
-./mvnw clean package
+./mvnw clean package -Djar.finalName=${SUBPROJECT}_${version}.jar
 pwd
 ls target/.
 cp target/${ARTIFACT} ../../build-output/.
