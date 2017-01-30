@@ -22,7 +22,7 @@ resources:
   type: s3
   source:
     bucket: df-pipeline-artifacts
-    regexp: sourcedemo-(.*).jar
+    regexp: (source|sink)demo-(.*).jar
     access_key_id: {{s3-access-key-id}}
     secret_access_key: {{s3-secret-access-key}}
     endpoint: {{s3-endpoint}}
@@ -94,7 +94,7 @@ jobs:
       passed: [build-binary-sourceapp, build-binary-sinkapp]
       trigger: true
   - task: deploy-to-cats
-    file: df-repo/ci/tasks/cf-deployment.yml
+    file: df-repo/ci/tasks/push-df-server.yml
     config:
       params:
         API_ENDPOINT: api.cf.wrightcode.net
@@ -103,6 +103,7 @@ jobs:
         ORG: wright-org
         SPACE: CI
         HOST: df-cats
+        DOMAIN: cf.wrightcode.net
   - task: cats
     file: df-repo/ci/tasks/cats.yml
     config:

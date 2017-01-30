@@ -13,8 +13,9 @@ outputs:
   - name: build-output
 
 run:
-  path: df-repo/ci/tasks/build-artifact.sh
+  path: df-repo/ci/tasks/deploy-stream-task.sh
   
 params:
-  SUBPROJECT:
-  ARTIFACT:
+  SOURCEAPP:
+  SINKAPP:
+  SCDF_COMMANDS:
