@@ -13,7 +13,7 @@ outputs:
   - name: build-output
 
 run:
-  path: df-repo/ci/tasks/deploy-stream-task.sh
+  path: df-repo/ci/tasks/build-artifact.sh
   
 params:
   SOURCEAPP:
