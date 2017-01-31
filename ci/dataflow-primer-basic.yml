@@ -22,7 +22,7 @@ resources:
   type: s3
   source:
     bucket: df-pipeline-artifacts
-    regexp: (source|sink)demo-(.*).jar
+    regexp: (?:source|sink)demo-(.*).jar
     access_key_id: {{s3-access-key-id}}
     secret_access_key: {{s3-secret-access-key}}
     endpoint: {{s3-endpoint}}
@@ -108,7 +108,7 @@ jobs:
     file: df-repo/ci/tasks/cats.yml
     config:
       params:
-        MUSIC_URL: http://dataflow-server.cf.wrightcode.net
+        MUSIC_URL: http://df-cats.cf.wrightcode.net
 
 - name: promote-to-uat
   plan:
