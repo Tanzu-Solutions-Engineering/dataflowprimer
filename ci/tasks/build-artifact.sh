@@ -8,4 +8,4 @@ echo $version
 ./mvnw clean package -Djar.finalName=${SUBPROJECT}-${version}
 pwd
 ls target/.
-cp target/${SUBPROJECT}_${version}.jar ../../build-output/.
+cp target/${SUBPROJECT}-${version}.jar ../../build-output/.
