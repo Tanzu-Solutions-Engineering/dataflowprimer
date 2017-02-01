@@ -3,8 +3,7 @@
 wget http://repo.spring.io/snapshot/org/springframework/cloud/spring-cloud-dataflow-server-cloudfoundry/1.2.0.BUILD-SNAPSHOT/spring-cloud-dataflow-server-cloudfoundry-1.2.0.BUILD-SNAPSHOT.jar
 wget http://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/1.1.2.RELEASE/spring-cloud-dataflow-shell-1.1.2.RELEASE.jar
 
-cf target -a ${API_ENDPOINT}
-cf login -u ${USERNAME} -p ${PASSWORD} -o ${ORG} -s ${SPACE}
+cf login -u ${USERNAME} -p ${PASSWORD} -o ${ORG} -s ${SPACE} -a ${API_ENDPOINT}
 
 cf delete dataflow-server -r -f
 
