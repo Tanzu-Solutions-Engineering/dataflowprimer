@@ -3,7 +3,7 @@
 wget http://repo.spring.io/snapshot/org/springframework/cloud/spring-cloud-dataflow-server-cloudfoundry/1.2.0.BUILD-SNAPSHOT/spring-cloud-dataflow-server-cloudfoundry-1.2.0.BUILD-SNAPSHOT.jar
 wget http://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/1.1.2.RELEASE/spring-cloud-dataflow-shell-1.1.2.RELEASE.jar
 
-cf login -u ${USERNAME} -p ${PASSWORD} -o ${ORG} -s ${SPACE} -a ${API_ENDPOINT}
+cf login -u ${USERNAME} -p ${PASSWORD} -o ${ORG} -s ${SPACE} -a ${API_ENDPOINT} --skip-ssl-validation
 
 cf delete dataflow-server -r -f
 
@@ -11,7 +11,7 @@ cf delete-service df-mysql -f
 cf create-service p-mysql 512mb df-mysql
  
 #custom built SCDF server to enable PCF features
-cf push dataflow-server -n df-mwright -m 2G -k 2G -b java_buildpack -u none -p spring-cloud-dataflow-server-cloudfoundry-1.2.0.BUILD-SNAPSHOT.jar --no-start
+cf push dataflow-server -n df-mwright -m 2G -k 2G -b java_buildpack -p spring-cloud-dataflow-server-cloudfoundry-1.2.0.BUILD-SNAPSHOT.jar --no-start
 cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_URL ${API_ENDPOINT}
 cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_ORG ${ORG}
 cf set-env dataflow-server SPRING_CLOUD_DEPLOYER_CLOUDFOUNDRY_SPACE ${SPACE}
