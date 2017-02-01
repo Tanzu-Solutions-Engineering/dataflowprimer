@@ -8,7 +8,7 @@ resources:
     username: mwright-pivotal
     password: newuser1
 
-- name: version
+- name: source-version
   type: semver
   source:
     endpoint: {{s3-endpoint}}
@@ -16,7 +16,17 @@ resources:
     key: current-version
     access_key_id: {{s3-access-key-id}}
     secret_access_key: {{s3-secret-access-key}}
-    initial_version: 1.0.0
+    initial_version: 1.0.8
+
+- name: sink-version
+  type: semver
+  source:
+    endpoint: {{s3-endpoint}}
+    bucket: df-pipeline-artifacts
+    key: current-version
+    access_key_id: {{s3-access-key-id}}
+    secret_access_key: {{s3-secret-access-key}}
+    initial_version: 1.0.8
 
 - name: df-release
   type: s3
@@ -44,7 +54,7 @@ jobs:
   - get: df-repo
     passed: [unit]
     trigger: true
-  - get: version
+  - get: source-version
     params: {bump: patch}
   - task: build-artifact
     file: df-repo/ci/tasks/build-artifact.yml
@@ -54,6 +64,8 @@ jobs:
     timeout: 5m
   - put: df-release
     params: {file: build-output/sourcedemo-*.jar}
+  - put: source-version
+    params: {file: source-version/number}
 
 - name: build-binary-sinkapp
   serial: true
@@ -61,7 +73,7 @@ jobs:
   - get: df-repo
     passed: [unit]
     trigger: true
-  - get: version
+  - get: sink-version
     params: {bump: patch}
   - task: build-artifact
     file: df-repo/ci/tasks/build-artifact.yml
@@ -71,32 +83,17 @@ jobs:
     timeout: 5m
   - put: df-release
     params: {file: build-output/sinkdemo-*.jar}
-
-- name: version_and_tag
-  serial: true
-  plan:
-  - aggregate:
-    - get: df-release
-      passed: [build-binary-sourceapp, build-binary-sinkapp]
-      trigger: true
-    - get: df-repo
-      passed: [build-binary-sourceapp, build-binary-sinkapp]
-      trigger: true
-    - put: version
-      params: {file: version/number}
-    - put: df-repo
-      params:
-        repository: df-repo
-        tag: version/number
+  - put: sink-version
+    params: {file: sink-version/number}
       
 - name: acceptance-tests
   plan:
   - aggregate:
     - get: df-release
-      passed: [version_and_tag]
+      passed: [build-binary-sourceapp, build-binary-sinkapp]
       trigger: true
     - get: df-repo
-      passed: [version_and_tag]
+      passed: [build-binary-sourceapp, build-binary-sinkapp]
       trigger: true
   - task: deploy-to-cats
     file: df-repo/ci/tasks/push-df-server.yml
