@@ -99,7 +99,7 @@ jobs:
     file: df-repo/ci/tasks/push-df-server.yml
     config:
       params:
-        API_ENDPOINT: api.cf.wrightcode.net
+        API_ENDPOINT: https://api.cf.wrightcode.net
         USERNAME: mwright@pivotal.io
         PASSWORD: p1v0tal
         ORG: wright-org
@@ -125,7 +125,7 @@ jobs:
     file: df-repo/ci/tasks/cf-deployment.yml
     config:
       params:
-        API_ENDPOINT: api.cf.wrightcode.net
+        API_ENDPOINT: https://api.cf.wrightcode.net
         USERNAME: mwright@pivotal.io
         PASSWORD: p1v0tal
         ORG: wright-org
@@ -144,7 +144,7 @@ jobs:
     file: df-repo/ci/tasks/cf-deployment.yml
     config:
       params:
-        API_ENDPOINT: api.cf.wrightcode.et
+        API_ENDPOINT: https://api.cf.wrightcode.et
         USERNAME: mwright@pivotal.io
         PASSWORD: p1v0tal
         ORG: wright-org
