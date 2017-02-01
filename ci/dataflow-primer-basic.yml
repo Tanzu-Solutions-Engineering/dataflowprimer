@@ -54,12 +54,6 @@ jobs:
     timeout: 5m
   - put: df-release
     params: {file: build-output/sourcedemo-*.jar}
-  - put: df-repo
-    params:
-      repository: df-repo
-      tag: version/number
-  - put: version
-    params: {file: version/number}
 
 - name: build-binary-sinkapp
   serial: true
@@ -77,14 +71,9 @@ jobs:
     timeout: 5m
   - put: df-release
     params: {file: build-output/sinkdemo-*.jar}
-  - put: df-repo
-    params:
-      repository: df-repo
-      tag: version/number
-  - put: version
-    params: {file: version/number}
 
-- name: acceptance-tests
+- name: version_and_tag
+  serial: true
   plan:
   - aggregate:
     - get: df-release
@@ -92,6 +81,22 @@ jobs:
       trigger: true
     - get: df-repo
       passed: [build-binary-sourceapp, build-binary-sinkapp]
+      trigger: true
+    - put: version
+      params: {file: version/number}
+    - put: df-repo
+      params:
+        repository: df-repo
+        tag: version/number
+      
+- name: acceptance-tests
+  plan:
+  - aggregate:
+    - get: df-release
+      passed: [version_and_tag]
+      trigger: true
+    - get: df-repo
+      passed: [version_and_tag]
       trigger: true
   - task: deploy-to-cats
     file: df-repo/ci/tasks/push-df-server.yml
