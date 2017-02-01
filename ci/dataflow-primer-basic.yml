@@ -18,15 +18,15 @@ resources:
     secret_access_key: {{s3-secret-access-key}}
     initial_version: 1.0.8
 
-- name: sink-version
-  type: semver
-  source:
-    endpoint: {{s3-endpoint}}
-    bucket: df-pipeline-artifacts
-    key: current-version
-    access_key_id: {{s3-access-key-id}}
-    secret_access_key: {{s3-secret-access-key}}
-    initial_version: 1.0.8
+#- name: sink-version
+#  type: semver
+#  source:
+#    endpoint: {{s3-endpoint}}
+#    bucket: df-pipeline-artifacts
+#    key: current-version
+#    access_key_id: {{s3-access-key-id}}
+#    secret_access_key: {{s3-secret-access-key}}
+#    initial_version: 1.0.8
 
 - name: df-release
   type: s3
@@ -67,33 +67,33 @@ jobs:
   - put: source-version
     params: {file: source-version/number}
 
-- name: build-binary-sinkapp
-  serial: true
-  plan:
-  - get: df-repo
-    passed: [unit]
-    trigger: true
-  - get: sink-version
-    params: {bump: patch}
-  - task: build-artifact
-    file: df-repo/ci/tasks/build-artifact.yml
-    params:
-      SUBPROJECT: sinkdemo
-      ARTIFACT: sinkdemo-*.jar
-    timeout: 5m
-  - put: df-release
-    params: {file: build-output/sinkdemo-*.jar}
-  - put: sink-version
-    params: {file: sink-version/number}
+#- name: build-binary-sinkapp
+#  serial: true
+#  plan:
+#  - get: df-repo
+#    passed: [unit]
+#    trigger: true
+#  - get: sink-version
+#    params: {bump: patch}
+#  - task: build-artifact
+#    file: df-repo/ci/tasks/build-artifact.yml
+#    params:
+#      SUBPROJECT: sinkdemo
+#      ARTIFACT: sinkdemo-*.jar
+#    timeout: 5m
+#  - put: df-release
+#    params: {file: build-output/sinkdemo-*.jar}
+#  - put: sink-version
+#    params: {file: sink-version/number}
       
 - name: acceptance-tests
   plan:
   - aggregate:
     - get: df-release
-      passed: [build-binary-sourceapp, build-binary-sinkapp]
+      passed: [build-binary-sourceapp]
       trigger: true
     - get: df-repo
-      passed: [build-binary-sourceapp, build-binary-sinkapp]
+      passed: [build-binary-sourceapp]
       trigger: true
   - task: deploy-to-cats
     file: df-repo/ci/tasks/push-df-server.yml
